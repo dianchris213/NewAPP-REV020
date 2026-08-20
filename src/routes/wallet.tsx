@@ -1030,24 +1030,25 @@ function AddWalletSheet({
               value={name}
               maxLength={30}
               placeholder="Contoh: Tabungan Liburan"
-              aria-invalid={!!fieldError.name}
-              aria-errormessage={fieldError.name ? "wallet-error-name" : undefined}
+              aria-invalid={!!fieldError.name || duplicateName}
+              aria-errormessage={fieldError.name || duplicateName ? "wallet-error-name" : undefined}
               onChange={(e) => {
                 setName(e.target.value);
                 clearFieldError("name");
               }}
               className="h-12 rounded-2xl border border-outline-variant/30 bg-surface-container px-4 text-[14px] text-on-surface outline-none placeholder:text-on-surface-variant/50 focus-visible:ring-2 focus-visible:ring-primary/60"
             />
-            {fieldError.name ? (
+            {fieldError.name || duplicateName ? (
               <span
                 id="wallet-error-name"
                 role="alert"
                 data-testid="wallet-error-name"
                 className="text-[11px] font-semibold text-error"
               >
-                {fieldError.name}
+                {fieldError.name ?? duplicateMessage}
               </span>
             ) : null}
+
           </label>
 
           <label className="flex flex-col gap-1">
