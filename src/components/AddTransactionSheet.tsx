@@ -180,25 +180,60 @@ export function AddTransactionSheet() {
         {/* Step 1 — Amount */}
         <StepLabel htmlFor="tx-amount" text="Nominal" />
         <div
-          className={`mt-1 flex items-center gap-2 rounded-[16px] border bg-surface-container-low px-4 py-3 ${
-            liveErrors.amount ? "border-error" : "border-outline-variant/30"
+          className={`mt-1 rounded-[20px] border bg-surface-container-low px-4 py-3 transition-colors ${
+            liveErrors.amount
+              ? "border-error"
+              : numeric
+                ? "border-primary/50"
+                : "border-outline-variant/30"
           }`}
         >
-          <span className="text-on-surface-variant">Rp</span>
-          <input
-            id="tx-amount"
-            inputMode="numeric"
-            autoComplete="off"
-            placeholder="0"
-            data-testid="tx-amount-input"
-            aria-invalid={!!liveErrors.amount}
-            aria-describedby="tx-amount-error"
-            value={numeric ? numeric.toLocaleString("id-ID") : ""}
-            onChange={(e) => setAmount(e.target.value.replace(/\D/g, "").slice(0, 15))}
-            className="w-full bg-transparent text-xl font-bold text-on-surface outline-none placeholder:text-outline"
-          />
+          <div className="flex items-baseline gap-2">
+            <span className="shrink-0 text-[13px] font-semibold text-on-surface-variant">Rp</span>
+            <input
+              id="tx-amount"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="0"
+              data-testid="tx-amount-input"
+              aria-invalid={!!liveErrors.amount}
+              aria-describedby="tx-amount-error tx-amount-hint"
+              value={numeric ? numeric.toLocaleString("id-ID") : ""}
+              onChange={(e) => setAmount(e.target.value.replace(/\D/g, "").slice(0, 15))}
+              className={`w-full min-w-0 bg-transparent text-right text-[28px] font-extrabold leading-none tabular-nums tracking-tight outline-none placeholder:text-outline ${
+                numeric ? (type === "income" ? "text-success" : "text-error") : "text-on-surface"
+              }`}
+            />
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-2 border-t border-outline-variant/20 pt-2">
+            <span
+              id="tx-amount-hint"
+              aria-live="polite"
+              className="min-w-0 truncate text-[11px] font-medium text-on-surface-variant/80"
+            >
+              {numeric ? formatIDR(numeric) : "Masukkan nominal transaksi"}
+            </span>
+            <span className="flex shrink-0 gap-1">
+              {[10_000, 50_000, 100_000].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  data-testid={`tx-amount-preset-${preset}`}
+                  onClick={() =>
+                    setAmount((prev) =>
+                      String(Math.min((Number(prev.replace(/\D/g, "")) || 0) + preset, AMOUNT_MAX)),
+                    )
+                  }
+                  className="rounded-full border border-outline-variant/30 px-2.5 py-1 text-[10px] font-semibold tabular-nums text-on-surface-variant transition-colors active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/60"
+                >
+                  {`+${preset / 1000}rb`}
+                </button>
+              ))}
+            </span>
+          </div>
         </div>
         <InlineError id="tx-amount-error" message={liveErrors.amount} />
+
 
         {/* Step 2 — Wallet type then registered sub-account */}
         <Step enabled={step1Done} hint="Isi nominal terlebih dahulu.">
