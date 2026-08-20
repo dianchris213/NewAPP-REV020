@@ -728,7 +728,13 @@ function AddWalletSheet({
   // Non-dismissible: focus trap only. Closing happens via Batal / Simpan.
   const ref = useModalA11y<HTMLDivElement>(true, () => {});
   const { wallets } = useApp();
-  const [type, setType] = useState<WalletType | null>(null);
+  // Search + jenis filter survive sheet reopen and page reload.
+  const [type, setType, resetType] = usePersistentState<WalletType | null>(
+    AW_TYPE_KEY,
+    null,
+    isWalletTypeOrNull,
+  );
+  const [query, setQuery, resetQuery] = usePersistentState<string>(AW_QUERY_KEY, "", isString);
   const [provider, setProvider] = useState("");
   const [name, setName] = useState("");
   const [balance, setBalance] = useState("");
@@ -746,21 +752,53 @@ function AddWalletSheet({
   const trimmedName = name.trim();
   const numericBalance = Number(balance.replace(/\D/g, "")) || 0;
   // Sumber dana options come from what the user registered in Pengaturan → Sumber Dana.
-  const providerOptions = type
-    ? Array.from(
-        new Set(
-          wallets
-            .filter((w) => w.type === type)
-            .map((w) => (w.provider?.trim() ? w.provider.trim() : w.name.trim()))
-            .filter(Boolean),
-        ),
-      )
-    : [];
+  const allProviders = useMemo(
+    () =>
+      type
+        ? Array.from(
+            new Set(
+              wallets
+                .filter((w) => w.type === type)
+                .map((w) => (w.provider?.trim() ? w.provider.trim() : w.name.trim()))
+                .filter(Boolean),
+            ),
+          )
+        : [],
+    [wallets, type],
+  );
+
+  const providerOptions = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return q ? allProviders.filter((p) => p.toLowerCase().includes(q)) : allProviders;
+  }, [allProviders, query]);
+
+  const filtersDirty = !!query.trim() || type !== null;
+  const resetFilters = () => {
+    resetQuery();
+    resetType();
+    setProvider("");
+    setError(undefined);
+    setFieldError({});
+  };
+
+  // Pocket names must be unique inside their Sumber Dana (same type + provider).
+  const duplicateName = useMemo(() => {
+    if (!type || !provider || trimmedName.length < 2) return false;
+    return wallets.some(
+      (w) =>
+        w.type === type &&
+        (w.provider?.trim() || WALLET_TYPE_LABEL[w.type]) === provider &&
+        w.name.trim().toLowerCase() === trimmedName.toLowerCase(),
+    );
+  }, [wallets, type, provider, trimmedName]);
+
+  const duplicateMessage = `Nama "${trimmedName}" sudah dipakai pada Sumber Dana ${provider}.`;
 
   const canSubmit =
     !!type &&
-    providerOptions.length > 0 &&
+    allProviders.length > 0 &&
     !!provider &&
+    !duplicateName &&
     trimmedName.length >= 2 &&
     trimmedName.length <= 30 &&
     numericBalance > 0 &&
@@ -770,13 +808,14 @@ function AddWalletSheet({
     e.preventDefault();
     const next: Partial<Record<FieldKey, string>> = {};
     if (!type) next.type = "Pilih Jenis kantong terlebih dahulu.";
-    else if (!providerOptions.length)
+    else if (!allProviders.length)
       next.provider =
         "Belum ada Sumber Dana untuk jenis ini. Tambahkan dulu di Pengaturan → Sumber Dana.";
-    else if (!provider || !providerOptions.includes(provider))
+    else if (!provider || !allProviders.includes(provider))
       next.provider = "Pilih Nama Sumber Dana yang tersedia.";
     if (trimmedName.length < 2) next.name = "Nama kantong minimal 2 karakter.";
     else if (trimmedName.length > 30) next.name = "Nama kantong maksimal 30 karakter.";
+    else if (duplicateName) next.name = duplicateMessage;
     if (numericBalance <= 0) next.balance = "Masukkan nominal saldo yang valid.";
     else if (numericBalance > AMOUNT_MAX) next.balance = "Saldo awal terlalu besar.";
 
@@ -789,6 +828,7 @@ function AddWalletSheet({
     setError(undefined);
     onSubmit({ name: trimmedName, type, ...(provider ? { provider } : {}), balance: numericBalance });
   };
+
 
   return (
     <SheetPortal>
