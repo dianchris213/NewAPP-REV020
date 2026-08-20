@@ -362,8 +362,9 @@ function Wallet() {
             );
           })}
         </div>
-
+        )}
       </section>
+
 
       <section className="mt-stack-lg">
         <div className="mb-3 flex items-center justify-between">
