@@ -109,7 +109,9 @@ function Wallet() {
     locked,
     unlockApp,
     language,
+    hydrated,
   } = useApp();
+
   const [addOpen, setAddOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState<null | "topup" | "transfer">(null);
   const [filterOpen, setFilterOpen] = useState(false);
