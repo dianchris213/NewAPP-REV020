@@ -292,7 +292,7 @@ function Wallet() {
                       {`${group.items.length} akun · ${providerGroups.length} jenis`}
                     </span>
                   </span>
-                  <span className="shrink-0 text-body font-semibold text-on-surface">
+                  <span className="shrink-0 text-body font-semibold tabular-nums text-on-surface">
                     {formatIDR(groupTotal)}
                   </span>
                   <Icon
@@ -339,7 +339,7 @@ function Wallet() {
                                     {w.provider ?? WALLET_TYPE_LABEL[w.type]}
                                   </span>
                                 </span>
-                                <span className="shrink-0 text-body font-semibold text-on-surface">
+                                <span className="shrink-0 text-body font-semibold tabular-nums text-on-surface">
                                   {formatIDR(w.balance)}
                                 </span>
                                 <Icon
@@ -704,7 +704,7 @@ function ActivityRow({ activity }: { activity: WalletActivity }) {
         </span>
       </div>
       {activity.amount > 0 ? (
-        <span className="shrink-0 text-body font-semibold text-on-surface">
+        <span className="shrink-0 text-body font-semibold tabular-nums text-on-surface">
           {formatIDR(activity.amount)}
         </span>
       ) : null}
