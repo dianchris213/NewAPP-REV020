@@ -260,7 +260,7 @@ const isTypeFilter = isOneOf(["all", "cash", "bank", "ewallet"] as const);
  * Undo, Enter confirms the undo, Escape dismisses, and focus returns to the
  * element that was active before it appeared.
  */
-function UndoSnackbar({
+export function UndoSnackbar({
   title,
   description,
   undoLabel,
@@ -856,7 +856,7 @@ export function FundSourceSheet({ onClose }: { onClose: () => void }) {
  * Destructive confirmation with a real focus trap: Escape cancels, Enter
  * confirms, and focus returns to the row's delete button afterwards.
  */
-function ConfirmDeleteDialog({
+export function ConfirmDeleteDialog({
   title,
   body,
   cancelLabel,
