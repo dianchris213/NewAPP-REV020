@@ -184,8 +184,18 @@ function Wallet() {
       <div className="gradient-hero relative overflow-hidden rounded-[24px] p-[20px]">
         <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary-container/20 blur-2xl" />
         <span className="text-label uppercase text-primary/80">Saldo Gabungan</span>
-        <p className="mt-1 text-display text-on-surface">{formatIDR(combined)}</p>
+        {hydrated ? (
+          <p
+            data-testid="wallet-combined"
+            className="mt-1 break-words text-display tabular-nums tracking-tight text-on-surface"
+          >
+            {formatIDR(combined)}
+          </p>
+        ) : (
+          <Skeleton className="mt-2 h-8 w-48 rounded-xl" />
+        )}
         <p className="text-body text-on-surface-variant">{`Dari ${wallets.length} akun aktif`}</p>
+
         <div className="mt-4 flex gap-2">
           <button
             type="button"
