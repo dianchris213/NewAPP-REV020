@@ -911,10 +911,44 @@ function AddWalletSheet({
           {/* Sub-menu: user-registered sumber dana (empty until created in Pengaturan). */}
           {type ? (
             <div className="flex flex-col gap-2">
-              <span className="text-meta text-on-surface-variant/80" id="wallet-provider-label">
-                Nama Sumber Dana
-              </span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-meta text-on-surface-variant/80" id="wallet-provider-label">
+                  Nama Sumber Dana
+                </span>
+                <span
+                  aria-live="polite"
+                  className="text-[11px] tabular-nums text-on-surface-variant/70"
+                >
+                  {`${providerOptions.length}/${allProviders.length}`}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="search"
+                  value={query}
+                  maxLength={30}
+                  placeholder="Cari sumber dana"
+                  aria-label="Cari sumber dana"
+                  data-testid="wallet-provider-search"
+                  onChange={(e) => setQuery(e.target.value)}
+                  className="h-11 min-w-0 flex-1 rounded-2xl border border-outline-variant/30 bg-surface-container px-4 text-[13px] text-on-surface outline-none placeholder:text-on-surface-variant/50 focus-visible:ring-2 focus-visible:ring-primary/60"
+                />
+                {filtersDirty ? (
+                  <button
+                    type="button"
+                    data-testid="wallet-filter-reset"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      resetFilters();
+                    }}
+                    className="h-11 shrink-0 rounded-full border border-outline-variant/30 px-4 text-[12px] font-semibold text-on-surface-variant focus-visible:ring-2 focus-visible:ring-primary/60"
+                  >
+                    Reset filter
+                  </button>
+                ) : null}
+              </div>
               {providerOptions.length ? (
+
               <div
                 role="radiogroup"
                 aria-labelledby="wallet-provider-label"
