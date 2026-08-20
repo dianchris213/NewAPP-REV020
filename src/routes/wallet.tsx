@@ -994,6 +994,13 @@ function AddWalletSheet({
                   );
                 })}
               </div>
+              ) : allProviders.length ? (
+                <p
+                  data-testid="wallet-provider-no-results"
+                  className="m-0 rounded-2xl border border-dashed border-outline-variant/40 px-4 py-4 text-center text-[11px] text-on-surface-variant/70"
+                >
+                  {`Tidak ada Sumber Dana cocok dengan "${query.trim()}".`}
+                </p>
               ) : (
                 <p
                   data-testid="wallet-provider-empty"
@@ -1002,6 +1009,7 @@ function AddWalletSheet({
                   Belum ada Sumber Dana untuk jenis ini. Tambahkan dulu di Pengaturan → Sumber Dana.
                 </p>
               )}
+
               {fieldError.provider ? (
                 <p
                   role="alert"
