@@ -72,6 +72,13 @@ const WALLET_ICON: Record<WalletType, string> = {
 
 const AMOUNT_MAX = 1_000_000_000_000;
 
+/** Persisted "Tambah Kantong" filters. */
+const AW_QUERY_KEY = "tmab-add-wallet-query";
+const AW_TYPE_KEY = "tmab-add-wallet-type";
+const isWalletType = isOneOf(["cash", "bank", "ewallet"] as const);
+const isWalletTypeOrNull = (v: unknown): v is WalletType | null => v === null || isWalletType(v);
+
+
 type ProviderGroup = { provider: string; items: WalletAccount[] };
 
 /** Groups a wallet type's accounts by their provider sub-type, ordered by catalog. */
