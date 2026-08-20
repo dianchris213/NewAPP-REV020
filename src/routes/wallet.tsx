@@ -240,8 +240,31 @@ function Wallet() {
             Tambah Kantong
           </button>
         </div>
+        {!hydrated ? (
+          <div className="glass-card rounded-[16px] px-4">
+            <ListSkeleton rows={3} label="Memuat kantong" testId="wallet-skeleton" />
+          </div>
+        ) : !wallets.length ? (
+          <div className="flex flex-col items-center gap-3" data-testid="wallet-empty">
+            <EmptyState
+              icon="account_balance_wallet"
+              title="Belum ada kantong"
+              description="Buat kantong pertama Anda untuk mulai mencatat saldo dan transaksi."
+            />
+            <button
+              type="button"
+              data-testid="wallet-empty-cta"
+              aria-haspopup="dialog"
+              onClick={openAdd}
+              className="gradient-primary h-11 w-full max-w-xs rounded-full text-[13px] font-bold text-on-primary-container transition-transform active:scale-95 focus-visible:ring-2 focus-visible:ring-primary/60"
+            >
+              Tambah Kantong Pertama
+            </button>
+          </div>
+        ) : (
         <div className="flex flex-col gap-3">
           {grouped.map((group) => {
+
             const open = expandedTypes.includes(group.type);
             const groupTotal = group.items.reduce((sum, w) => sum + w.balance, 0);
             const providerGroups = providerBreakdown(group.type, group.items);
